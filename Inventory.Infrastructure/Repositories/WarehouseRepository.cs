@@ -1,0 +1,94 @@
+using Inventory.Application.Common.Abstracts;
+using Inventory.Application.Common.Pagination;
+using Inventory.Domain.Entities;
+using Inventory.Infrastructure.Context;
+using Inventory.Infrastructure.Extensions;
+using Microsoft.EntityFrameworkCore;
+
+namespace Inventory.Infrastructure.Repositories
+{
+    public class WarehouseRepository(InventoryDbContext context, IDateTimeProvider dateTimeProvider) : IWarehouseRepository
+    {
+        public async Task<PaginatedList<Warehouse>> GetWarehousesAsync(Guid businessId, string? name, int page, int pageSize) =>
+            await context.Warehouses
+                .AsNoTracking()
+                .Where(w => w.BusinessId == businessId)
+                .Include(w => w.Location)
+                .OrderByDescending(w => w.CreatedAt)
+                .FiltersWarehouse(name)
+                .ToPaginatedListAsync(page, pageSize);
+
+        public async Task<Warehouse?> GetWarehouseByIdAsync(Guid id, Guid businessId) =>
+            await context.Warehouses
+                .AsNoTracking()
+                .Include(w => w.Location)
+                .FirstOrDefaultAsync(w => w.Id == id && w.BusinessId == businessId);
+
+        public async Task<Warehouse> CreateWarehouseAsync(Warehouse warehouse)
+        {
+            context.Warehouses.Add(warehouse);
+            await context.SaveChangesAsync();
+            return await context.Warehouses
+                .AsNoTracking()
+                .Include(w => w.Location)
+                .FirstAsync(w => w.Id == warehouse.Id);
+        }
+
+        public async Task UpdateWarehouseAsync(Warehouse warehouse)
+        {
+            warehouse.UpdatedAt = dateTimeProvider.UtcNow;
+            context.Warehouses.Update(warehouse);
+            await context.SaveChangesAsync();
+        }
+
+        public async Task DeleteWarehouseAsync(Warehouse warehouse)
+        {
+            warehouse.IsDeleted = true;
+            context.Warehouses.Update(warehouse);
+            await context.SaveChangesAsync();
+        }
+
+        public async Task<PaginatedList<WarehouseProduct>> GetProductsByWarehousesAsync(Guid id, string? name, int page, int pageSize) =>
+           await context.WarehouseProducts
+                .AsNoTracking()
+                .Where(wp => wp.WarehouseId == id)
+                .Include(wp => wp.Product)
+                .ThenInclude(wp => wp.Category)
+                .OrderByDescending(wp => wp.Product.CreatedAt)
+                .FiltersWarehouseProduct(name)
+                .ToPaginatedListAsync(page, pageSize);
+
+        public async Task<WarehouseProduct?> GetWarehouseProductByWarehouseIdAndProductIdAsync(Guid? warehouseId, int productId) =>
+            await context.WarehouseProducts
+                .AsNoTracking()
+                .Include(wp => wp.Product)
+                .FirstOrDefaultAsync(bp => warehouseId.HasValue && bp.WarehouseId == warehouseId.Value && bp.ProductId == productId);
+
+        public async Task AddProductsToWarehouseAsync(List<WarehouseProduct> warehouseProducts)
+        {
+            context.AddRange(warehouseProducts);
+            await context.SaveChangesAsync();
+        }
+
+        public async Task<PaginatedList<Product>> GetProductsDoesntExistByWarehouseAsync(Guid id, Guid businessId, int page, int pageSize) =>
+            await context.Products
+                .AsNoTracking()
+                .Where(p => p.BusinessId == businessId && !context.WarehouseProducts.Any(wp => wp.ProductId == p.Id && wp.WarehouseId == id))
+                .Include(p => p.Measure)
+                .Include(p => p.Category)
+                .ToPaginatedListAsync(page, pageSize);
+
+        public async Task<IEnumerable<WarehouseProduct>> GetWarehouseProductsByProductIdsAsync(Guid warehouseId, IEnumerable<int> productIds) =>
+            await context.WarehouseProducts
+                .AsNoTracking()
+                .Include(wp => wp.Product)
+                .Where(wp => wp.WarehouseId == warehouseId && productIds.Contains(wp.ProductId))
+                .ToListAsync();
+
+        public async Task DeleteProductsAsync(IEnumerable<WarehouseProduct> products)
+        {
+            context.WarehouseProducts.RemoveRange(products);
+            await context.SaveChangesAsync();
+        }
+    }
+}

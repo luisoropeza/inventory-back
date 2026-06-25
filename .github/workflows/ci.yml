@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore Inventory.sln
+
+      - name: Check Code Format & Style
+        run: dotnet format Inventory.sln --verify-no-changes --severity info
+
+      - name: Build
+        run: dotnet build Inventory.sln --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test Inventory.sln --no-build --configuration Release --verbosity normal
