@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Inventory.Infrastructure.Migrations
 {
     [DbContext(typeof(InventoryDbContext))]
-    [Migration("20260519225136_ImproveDbContext")]
-    partial class ImproveDbContext
+    [Migration("20260703193127_InitialMigrate")]
+    partial class InitialMigrate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -130,7 +130,7 @@ namespace Inventory.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Businesss", (string)null);
+                    b.ToTable("Businesses", (string)null);
                 });
 
             modelBuilder.Entity("Inventory.Domain.Entities.BusinessSaleCounter", b =>

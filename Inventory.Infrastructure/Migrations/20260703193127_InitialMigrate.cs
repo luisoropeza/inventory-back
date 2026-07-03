@@ -7,24 +7,23 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Inventory.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialMigrate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(
                 @"CREATE EXTENSION IF NOT EXISTS ""uuid-ossp"";");
-
             migrationBuilder.CreateTable(
-                name: "Businesss",
+                name: "Businesses",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "uuid_generate_v4()"),
                     Name = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Businesss", x => x.Id);
+                    table.PrimaryKey("PK_Businesses", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -43,7 +42,7 @@ namespace Inventory.Infrastructure.Migrations
                 name: "Locations",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "uuid_generate_v4()"),
                     Address = table.Column<string>(type: "text", nullable: false),
                     City = table.Column<string>(type: "text", nullable: false),
                     CoordinateX = table.Column<double>(type: "double precision", nullable: false),
@@ -99,9 +98,9 @@ namespace Inventory.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Categories", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Categories_Businesss_BusinessId",
+                        name: "FK_Categories_Businesses_BusinessId",
                         column: x => x.BusinessId,
-                        principalTable: "Businesss",
+                        principalTable: "Businesses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -123,9 +122,9 @@ namespace Inventory.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Customers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Customers_Businesss_BusinessId",
+                        name: "FK_Customers_Businesses_BusinessId",
                         column: x => x.BusinessId,
-                        principalTable: "Businesss",
+                        principalTable: "Businesses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -149,9 +148,9 @@ namespace Inventory.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Providers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Providers_Businesss_BusinessId",
+                        name: "FK_Providers_Businesses_BusinessId",
                         column: x => x.BusinessId,
-                        principalTable: "Businesss",
+                        principalTable: "Businesses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -172,9 +171,9 @@ namespace Inventory.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Branches", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Branches_Businesss_BusinessId",
+                        name: "FK_Branches_Businesses_BusinessId",
                         column: x => x.BusinessId,
-                        principalTable: "Businesss",
+                        principalTable: "Businesses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -200,9 +199,9 @@ namespace Inventory.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Warehouses", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Warehouses_Businesss_BusinessId",
+                        name: "FK_Warehouses_Businesses_BusinessId",
                         column: x => x.BusinessId,
-                        principalTable: "Businesss",
+                        principalTable: "Businesses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -232,9 +231,9 @@ namespace Inventory.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Users_Businesss_BusinessId",
+                        name: "FK_Users_Businesses_BusinessId",
                         column: x => x.BusinessId,
-                        principalTable: "Businesss",
+                        principalTable: "Businesses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -265,9 +264,9 @@ namespace Inventory.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Products", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Products_Businesss_BusinessId",
+                        name: "FK_Products_Businesses_BusinessId",
                         column: x => x.BusinessId,
-                        principalTable: "Businesss",
+                        principalTable: "Businesses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -329,9 +328,9 @@ namespace Inventory.Infrastructure.Migrations
                         principalTable: "Branches",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Purchases_Businesss_BusinessId",
+                        name: "FK_Purchases_Businesses_BusinessId",
                         column: x => x.BusinessId,
-                        principalTable: "Businesss",
+                        principalTable: "Businesses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -398,9 +397,9 @@ namespace Inventory.Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Sales_Businesss_BusinessId",
+                        name: "FK_Sales_Businesses_BusinessId",
                         column: x => x.BusinessId,
-                        principalTable: "Businesss",
+                        principalTable: "Businesses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -476,9 +475,9 @@ namespace Inventory.Infrastructure.Migrations
                         principalTable: "Branches",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_InventoryMovements_Businesss_BusinessId",
+                        name: "FK_InventoryMovements_Businesses_BusinessId",
                         column: x => x.BusinessId,
-                        principalTable: "Businesss",
+                        principalTable: "Businesses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -596,12 +595,6 @@ namespace Inventory.Infrastructure.Migrations
                 name: "IX_Branches_BusinessId",
                 table: "Branches",
                 column: "BusinessId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Branches_Id",
-                table: "Branches",
-                column: "Id",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_BranchProducts_ProductId",
@@ -768,12 +761,6 @@ namespace Inventory.Infrastructure.Migrations
                 name: "IX_Warehouses_BusinessId",
                 table: "Warehouses",
                 column: "BusinessId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Warehouses_Id",
-                table: "Warehouses",
-                column: "Id",
-                unique: true);
         }
 
         /// <inheritdoc />
@@ -840,7 +827,7 @@ namespace Inventory.Infrastructure.Migrations
                 name: "Roles");
 
             migrationBuilder.DropTable(
-                name: "Businesss");
+                name: "Businesses");
         }
     }
 }
