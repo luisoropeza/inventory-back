@@ -127,7 +127,7 @@ namespace Inventory.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Businesss", (string)null);
+                    b.ToTable("Businesses", (string)null);
                 });
 
             modelBuilder.Entity("Inventory.Domain.Entities.BusinessSaleCounter", b =>

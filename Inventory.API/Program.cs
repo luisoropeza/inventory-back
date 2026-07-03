@@ -2,7 +2,6 @@ using Inventory.API.Middlewares;
 using Inventory.Application;
 using Inventory.Infrastructure;
 using Inventory.Infrastructure.Context;
-using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.OpenApi;
 using System.Threading.RateLimiting;
 
